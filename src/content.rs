@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::default::Default;
-use std::path::Path;
 
 #[derive(Serialize, Deserialize, Default, Clone)]
 #[serde(default)]
