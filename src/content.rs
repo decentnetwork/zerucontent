@@ -61,6 +61,8 @@ pub struct Content {
     #[serde(skip_serializing_if = "is_default")]
     pub viewport: String,
     #[serde(skip_serializing_if = "is_default")]
+    pub inner_path: String,
+    #[serde(skip_serializing_if = "is_default")]
     pub settings: BTreeMap<String, serde_json::Value>,
 
     #[serde(flatten)]
