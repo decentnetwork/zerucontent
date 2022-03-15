@@ -1,14 +1,10 @@
-use super::{File, Include, UserContents};
+use std::{collections::BTreeMap, default::Default, time::SystemTime};
 
 use json_filter_sorted::sort::sort_json;
-
-use crate::util::is_default;
-use crate::zeruformatter;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::collections::BTreeMap;
-use std::default::Default;
-use std::time::SystemTime;
+
+use crate::{util::is_default, zeruformatter, File, Include, UserContents};
 
 #[derive(Serialize, Deserialize, Default, Clone)]
 #[serde(default)]
@@ -21,8 +17,7 @@ pub struct Content {
     pub domain: String,
     #[serde(skip_serializing_if = "is_default")]
     pub title: String,
-    //TODO! Skiping default value while serialising may cause sign verify failures
-    // #[serde(skip_serializing_if = "is_default")]
+    #[serde(skip_serializing_if = "is_default")]
     pub description: String,
     #[serde(skip_serializing_if = "is_default")]
     pub favicon: String,
@@ -49,7 +44,7 @@ pub struct Content {
     #[serde(skip_serializing_if = "is_default")]
     pub user_contents: UserContents,
 
-    pub ignore: String, //May break old zeronet sites
+    pub ignore: String,
     #[serde(skip_serializing_if = "is_default")]
     pub inner_path: String,
     pub modified: usize, //TODO! This need to be f64 for older content.json format
@@ -78,6 +73,9 @@ pub struct Content {
     #[serde(flatten)]
     other: BTreeMap<String, Value>,
     pub zeronet_version: String,
+
+    #[serde(skip_serializing, skip_deserializing)]
+    _raw: Value,
 }
 
 pub fn dump<T: Serialize>(value: T) -> Result<String, serde_json::error::Error> {
@@ -107,21 +105,23 @@ impl Content {
     }
 
     pub fn from_buf(buf: serde_bytes::ByteBuf) -> Result<Content, ()> {
+        let _raw: serde_json::Value = serde_json::from_slice(&buf).unwrap();
         let content = match serde_json::from_slice(&buf) {
             Ok(c) => c,
             Err(_) => return Err(()),
         };
+        let content = Content { _raw, ..content };
         Ok(content)
     }
 
-    pub fn cleared(&self) -> Content {
+    fn cleared(&self) -> Content {
         let mut new_content = self.clone();
         new_content.signs = BTreeMap::new();
         new_content.sign = vec![];
         new_content
     }
 
-    pub fn dump(&self) -> Result<String, serde_json::error::Error> {
+    fn dump(&self) -> Result<String, serde_json::error::Error> {
         zeruformatter::to_string_zero(
             &sort_json(json!(self.cleared()))
                 .unwrap()
@@ -131,22 +131,35 @@ impl Content {
         )
     }
 
+    fn dump_value(value: Value) -> Result<String, serde_json::error::Error> {
+        zeruformatter::to_string_zero(
+            &sort_json(value)
+                .unwrap()
+                .as_object()
+                .map(|x| x.to_owned())
+                .unwrap(),
+        )
+    }
+
     // TODO: verify should probably return more than just a bool
     pub fn verify(&self, key: String) -> bool {
-        let content = self.cleared();
+        let mut raw = self._raw.clone();
+        raw.as_object_mut().unwrap().remove("signs");
+        raw.as_object_mut().unwrap().remove("sign");
         let signature = match self.signs.get(&key) {
             Some(v) => v,
             None => return false,
         };
-
-        let result =
-            zeronet_cryptography::verify(content.dump().unwrap().as_bytes(), &key, &signature);
+        let result = zeronet_cryptography::verify(
+            Self::dump_value(raw).unwrap().as_bytes(),
+            &key,
+            &signature,
+        );
         result.is_ok()
     }
 
     pub fn sign(&self, privkey: String) -> String {
-        let result = zeronet_cryptography::sign(self.dump().unwrap().as_bytes(), &privkey).unwrap();
-        result
+        zeronet_cryptography::sign(self.dump().unwrap().as_bytes(), &privkey).unwrap()
     }
 
     pub fn get_file(&self, inner_path: &str) -> Option<File> {
