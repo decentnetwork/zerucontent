@@ -36,6 +36,11 @@ pub struct Content {
     #[serde(rename = "background-color")]
     #[serde(skip_serializing_if = "is_default")]
     pub background_color: String,
+
+    #[serde(rename = "background-color-dark")]
+    #[serde(skip_serializing_if = "is_default")]
+    pub background_color_dark: String,
+
     #[serde(skip_serializing_if = "is_default")]
     pub viewport: String,
     #[serde(skip_serializing_if = "is_default")]
@@ -112,6 +117,10 @@ impl Content {
         };
         let content = Content { _raw, ..content };
         Ok(content)
+    }
+
+    pub fn raw(&self) -> &serde_json::Value {
+        &self._raw
     }
 
     fn cleared(&self) -> Content {
