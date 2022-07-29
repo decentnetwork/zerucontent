@@ -5,16 +5,16 @@ use std::default::Default;
 
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone)]
 pub struct UserContents {
-	archived: BTreeMap<String, usize>,
-	archived_before: usize,
-	cert_signers: BTreeMap<String, Vec<String>>,
-	cert_signers_pattern: String,
-	permission_rules: BTreeMap<String, PermissionRules>,
-	permissions: BTreeMap<String, PermissionRules>,
+    pub archived: BTreeMap<String, usize>,
+    pub archived_before: usize,
+    pub cert_signers: BTreeMap<String, Vec<String>>,
+    pub cert_signers_pattern: String,
+    pub permission_rules: BTreeMap<String, PermissionRules>,
+    pub permissions: BTreeMap<String, PermissionRules>,
 }
 
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone)]
 pub struct PermissionRules {
-	files_allowed: String,
-	max_size: usize,
+    files_allowed: String,
+    max_size: usize,
 }

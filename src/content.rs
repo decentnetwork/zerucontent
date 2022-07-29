@@ -47,7 +47,7 @@ pub struct Content {
     pub translate: Vec<String>,
 
     #[serde(skip_serializing_if = "is_default")]
-    pub user_contents: UserContents,
+    pub user_contents: Option<UserContents>,
 
     pub ignore: String,
     #[serde(skip_serializing_if = "is_default")]
