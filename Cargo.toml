@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 zeronet_cryptography = { path = "../zeronet_cryptography" }
-json_filter_sorted = { path = "../json_filter_sorted" }
+json_filter_sorted = { git = "https://github.com/decentnetwork/sorted_json_keys.git" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0.73"
 serde_bytes = "0.11.5"
