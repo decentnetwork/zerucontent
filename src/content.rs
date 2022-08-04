@@ -135,8 +135,17 @@ impl Content {
         Ok(content)
     }
 
-    pub fn raw(&self) -> &serde_json::Value {
-        &self._raw.1
+    pub fn raw(&self) -> serde_json::Value {
+        let mut data = serde_json::to_string(&self).unwrap();
+        let is_properly_escaped = self._raw.0;
+        if !is_properly_escaped {
+            data = data.replace("\\\\u", "\\u");
+        }
+        serde_json::from_str(&data).unwrap()
+    }
+
+    pub fn is_properly_escaped(&self) -> bool {
+        self._raw.0
     }
 
     fn cleared(&self) -> Content {
