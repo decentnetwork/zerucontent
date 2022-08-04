@@ -4,7 +4,10 @@ use json_filter_sorted::sort::sort_json;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-use crate::{util::is_default, zeruformatter, File, Include, UserContents};
+use crate::{
+    util::{is_default, Number},
+    zeruformatter, File, Include, UserContents,
+};
 
 #[derive(Serialize, Deserialize, Default, Clone)]
 #[serde(default)]
@@ -52,7 +55,7 @@ pub struct Content {
     pub ignore: String,
     #[serde(skip_serializing_if = "is_default")]
     pub inner_path: String,
-    pub modified: usize, //TODO! This need to be f64 for older content.json format
+    pub modified: Number, //TODO! This need to be f64 for older content.json format
     #[serde(skip_serializing_if = "is_default")]
     pub postmessage_nonce_security: bool,
 
@@ -99,10 +102,12 @@ impl Content {
             title: address.to_owned(),
             address,
             address_index,
-            modified: SystemTime::now()
-                .duration_since(SystemTime::UNIX_EPOCH)
-                .unwrap()
-                .as_secs() as usize,
+            modified: Number::Integer(
+                SystemTime::now()
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs() as usize,
+            ),
             inner_path: "content.json".to_owned(),
             postmessage_nonce_security: true,
             ..Default::default()
@@ -153,8 +158,9 @@ impl Content {
     // TODO: verify should probably return more than just a bool
     pub fn verify(&self, key: String) -> bool {
         let mut raw = self._raw.clone();
-        raw.as_object_mut().unwrap().remove("signs");
-        raw.as_object_mut().unwrap().remove("sign");
+        let map = raw.as_object_mut().unwrap();
+        map.remove("signs");
+        map.remove("sign");
         let signature = match self.signs.get(&key) {
             Some(v) => v,
             None => return false,
