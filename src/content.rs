@@ -83,7 +83,7 @@ pub struct Content {
     pub zeronet_version: String,
 
     #[serde(skip_serializing, skip_deserializing)]
-    _raw: Value,
+    _raw: (bool, Value),
 }
 
 pub fn dump<T: Serialize>(value: T) -> Result<String, serde_json::error::Error> {
@@ -115,17 +115,28 @@ impl Content {
     }
 
     pub fn from_buf(buf: serde_bytes::ByteBuf) -> Result<Content, ()> {
-        let _raw: serde_json::Value = serde_json::from_slice(&buf).unwrap();
+        let is_properly_escaped;
+        let _raw: serde_json::Value = {
+            let mut string = String::from_utf8(buf.to_vec()).unwrap();
+            is_properly_escaped = string.contains("\\\\u");
+            if !is_properly_escaped {
+                string = string.replace("\\u", "\\\\u");
+            }
+            serde_json::from_str(&string).unwrap()
+        };
         let content = match serde_json::from_slice(&buf) {
             Ok(c) => c,
             Err(_) => return Err(()),
         };
-        let content = Content { _raw, ..content };
+        let content = Content {
+            _raw: (is_properly_escaped, _raw),
+            ..content
+        };
         Ok(content)
     }
 
     pub fn raw(&self) -> &serde_json::Value {
-        &self._raw
+        &self._raw.1
     }
 
     fn cleared(&self) -> Content {
@@ -158,18 +169,20 @@ impl Content {
     // TODO: verify should probably return more than just a bool
     pub fn verify(&self, key: String) -> bool {
         let mut raw = self._raw.clone();
-        let map = raw.as_object_mut().unwrap();
+        let map = raw.1.as_object_mut().unwrap();
         map.remove("signs");
         map.remove("sign");
         let signature = match self.signs.get(&key) {
             Some(v) => v,
             None => return false,
         };
-        let result = zeronet_cryptography::verify(
-            Self::dump_value(raw).unwrap().as_bytes(),
-            &key,
-            &signature,
-        );
+        let mut data = Self::dump_value(raw.1).unwrap();
+        let is_properly_escaped = self._raw.0;
+        if !is_properly_escaped {
+            data = data.replace("\\\\u", "\\u");
+        }
+        let bytes = data.as_bytes();
+        let result = zeronet_cryptography::verify(bytes, &key, &signature);
         result.is_ok()
     }
 

@@ -9,6 +9,7 @@ pub use content::Content;
 pub use file::File;
 pub use include::Include;
 pub use user_contents::UserContents;
+pub use util::Number;
 
 #[cfg(test)]
 #[cfg_attr(tarpaulin, ignore)]
@@ -30,7 +31,15 @@ mod tests {
         let content = Content::from_buf(ByteBuf::from(CONTENT_UNICODE.1.as_bytes())).unwrap();
         let key = CONTENT_UNICODE.0.into();
         let result = content.verify(key);
-        //TODO! This test should pass after proper unicode support is added.
+        assert_eq!(result, true)
+    }
+
+    #[test]
+    fn test_unicode_un_escaped_verification() {
+        let content =
+            Content::from_buf(ByteBuf::from(CONTENT_UNICODE_UNESCAPED.1.as_bytes())).unwrap();
+        let key = CONTENT_UNICODE_UNESCAPED.0.into();
+        let result = content.verify(key);
         assert_eq!(result, true)
     }
 
@@ -80,15 +89,31 @@ mod tests {
     );
 
     const CONTENT_UNICODE: (&str, &str) = (
-        "1FBsxrrPQehBnZHcJDS9J62n6fPZKzEw2F",
-        r#"
-		{
-		"address": "1FBsxrrPQehBnZHcJDS9J62n6fPZKzEw2F",
+        "16MQxEQe1U32zDGTKWs1rnc1mU3iL42EB3",
+        r#"{
+		"address": "16MQxEQe1U32zDGTKWs1rnc1mU3iL42EB3",
+		"description": "",
 		"files": {},
 		"inner_path": "content.json",
-		"modified": 1659638759,
-		"signers_sign": "HEg2sBlonp2QltKLjLv9YqhcgR7X21bzoFKng5pajDG2L9BYOj6Zmq3tqDAaYReO6utrs9nDRcISQdbazQm4afs=",
-		"signs": {"1FBsxrrPQehBnZHcJDS9J62n6fPZKzEw2F": "G9FDy/FOn9HeVM0BtMeXwqevDTJO70/aObMtlNpCoyc3Ns0dLuEiGaBfzgSc2JFYQfOb2Ezr8I8haufF1uxi9/4="},
+		"modified": 1659645497,
+		"signers_sign": "Gy9gpZYdEChTxIAxCYfljl8xBBJP0iOYe8Arfs5eMyEdXbSSKmymPGJV1VegBkLt2Br9ltpwWmEarvGXR6Gi638=",
+		"signs": {"16MQxEQe1U32zDGTKWs1rnc1mU3iL42EB3": "HNG1x0Bdx2wtC0HDhjIZ7VKEQ6OGhnLGBMXrlCzSAvgKGoPGSQRroPjP+SNtjdWptQ1xHi/efEFFWJx/2aRnZm0="},
+		"signs_required": 1,
+		"title": "My New Site \\ud83d\\ude01",
+		"zeronet_version": "0.8.0"
+		}"#,
+    );
+
+    const CONTENT_UNICODE_UNESCAPED: (&str, &str) = (
+        "16MQxEQe1U32zDGTKWs1rnc1mU3iL42EB3",
+        r#"{
+		"address": "16MQxEQe1U32zDGTKWs1rnc1mU3iL42EB3",
+		"description": "",
+		"files": {},
+		"inner_path": "content.json",
+		"modified": 1659645953,
+		"signers_sign": "Gy9gpZYdEChTxIAxCYfljl8xBBJP0iOYe8Arfs5eMyEdXbSSKmymPGJV1VegBkLt2Br9ltpwWmEarvGXR6Gi638=",
+		"signs": {"16MQxEQe1U32zDGTKWs1rnc1mU3iL42EB3": "HNF0cx1cGJhyuv9SiIv/PD+drXfX5mvf/cray09ZtDiNenTFfU0SmuAslzhcvn78gY+7y8d+K5S83prn35jiilg="},
 		"signs_required": 1,
 		"title": "My New Site \ud83d\ude01",
 		"zeronet_version": "0.8.0"
