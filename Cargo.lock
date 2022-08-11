@@ -433,6 +433,7 @@ checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 [[package]]
 name = "zeronet_cryptography"
 version = "0.2.0"
+source = "git+https://github.com/decentnetwork/zeronet_cryptography.git#750d47698c45946f0f60a033553088ef995f3c22"
 dependencies = [
  "base64",
  "bitcoin",
