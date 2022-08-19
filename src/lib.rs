@@ -5,6 +5,8 @@ pub mod user_contents;
 mod util;
 mod zeruformatter;
 
+pub use json_filter_sorted::*;
+
 pub use content::Content;
 pub use file::File;
 pub use include::Include;
