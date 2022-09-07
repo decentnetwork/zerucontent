@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, default::Default, time::SystemTime};
 
 use json_filter_sorted::sort::sort_json;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{json, Error, Value};
 
 use crate::{
     util::{is_default, Number},
@@ -114,7 +114,7 @@ impl Content {
         }
     }
 
-    pub fn from_buf(buf: serde_bytes::ByteBuf) -> Result<Content, ()> {
+    pub fn from_buf(buf: serde_bytes::ByteBuf) -> Result<Content, Error> {
         let is_properly_escaped;
         let _raw: serde_json::Value = {
             let mut string = String::from_utf8(buf.to_vec()).unwrap();
@@ -126,7 +126,7 @@ impl Content {
         };
         let content = match serde_json::from_slice(&buf) {
             Ok(c) => c,
-            Err(_) => return Err(()),
+            Err(err) => return Err(err),
         };
         let content = Content {
             _raw: (is_properly_escaped, _raw),
