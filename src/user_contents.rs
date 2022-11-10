@@ -13,7 +13,7 @@ pub struct UserContents {
     pub permission_rules: BTreeMap<String, PermissionRulesType>,
     pub permissions: BTreeMap<String, PermissionRulesType>,
     pub content_inner_path: String,
-    pub optional: String,
+    pub optional: Option<String>,
     pub relative_path: String,
 }
 
