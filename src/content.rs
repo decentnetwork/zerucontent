@@ -20,7 +20,7 @@ pub struct Content {
     pub domain: String,
     #[serde(skip_serializing_if = "is_default")]
     pub title: String,
-    #[serde(skip_serializing_if = "is_default")]
+    // #[serde(skip_serializing_if = "is_default")]
     pub description: String,
     #[serde(skip_serializing_if = "is_default")]
     pub favicon: String,
