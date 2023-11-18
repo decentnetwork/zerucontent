@@ -20,7 +20,15 @@ pub struct UserContents {
     #[serde(skip_serializing_if = "String::is_empty")]
     pub relative_path: String,
     #[serde(flatten)]
+    #[serde(skip_serializing_if = "is_decentnet_serialization")]
     pub data: BTreeMap<String, Value>,
+}
+
+fn is_decentnet_serialization<T: Default + PartialEq>(_: &T) -> bool {
+    #[cfg(feature = "decentnet-toml")]
+    return true;
+    #[cfg(not(feature = "decentnet-toml"))]
+    false
 }
 
 #[derive(Serialize, Debug, Deserialize, PartialEq, Eq, Clone)]
