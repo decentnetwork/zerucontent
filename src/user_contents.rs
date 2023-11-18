@@ -3,7 +3,7 @@ use std::cmp::PartialEq;
 use std::collections::BTreeMap;
 use std::default::Default;
 
-#[derive(Serialize, Deserialize, Default, PartialEq, Clone)]
+#[derive(Serialize, Debug, Deserialize, Default, PartialEq, Eq, Clone)]
 #[serde(default)]
 pub struct UserContents {
     pub archived: BTreeMap<String, usize>,
@@ -17,7 +17,7 @@ pub struct UserContents {
     pub relative_path: String,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Serialize, Debug, Deserialize, PartialEq, Eq, Clone)]
 #[serde(untagged)]
 pub enum PermissionRulesType {
     None(bool),
@@ -30,7 +30,7 @@ impl Default for PermissionRulesType {
     }
 }
 
-#[derive(Serialize, Deserialize, Default, PartialEq, Clone)]
+#[derive(Serialize, Debug, Deserialize, Default, PartialEq, Eq, Clone)]
 #[serde(default)]
 pub struct PermissionRules {
     pub files_allowed: String,
