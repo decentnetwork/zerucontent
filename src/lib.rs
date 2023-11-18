@@ -103,6 +103,48 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_verification_3() {
+        let content = Content::from_buf(ByteBuf::from(CONTENT_DATA_TEST_2.1.as_bytes())).unwrap();
+        let key = CONTENT_DATA_TEST_2.0.into();
+        let result = content.verify(key);
+        assert!(result);
+        let user_contents = content.user_contents.unwrap();
+        assert_eq!(
+            user_contents.cert_signers["zeroid.bit"],
+            ["1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz".to_string()]
+        );
+        let permission_rules = &user_contents.permission_rules[".*"];
+        if let PermissionRulesType::Rules(rules) = permission_rules.clone() {
+            assert_eq!(rules.files_allowed, "data.json");
+            assert_eq!(rules.max_size, 20000);
+        } else {
+            unreachable!();
+        }
+        let permission_rules = &user_contents.permission_rules["bitid/.*@zeroid.bit"];
+        if let PermissionRulesType::Rules(rules) = permission_rules.clone() {
+            assert_eq!(rules.max_size, 40000);
+        } else {
+            unreachable!();
+        }
+        let permission_rules = &user_contents.permission_rules["bitmsg/.*@zeroid.bit"];
+        if let PermissionRulesType::Rules(rules) = permission_rules.clone() {
+            assert_eq!(rules.max_size, 15000);
+        } else {
+            unreachable!();
+        }
+        let permission_rules = &user_contents.permissions["bad@zeroid.bit"];
+        if let PermissionRulesType::None(value) = permission_rules.clone() {
+            assert!(!value);
+        }
+        let permission_rules = &user_contents.permissions["nofish@zeroid.bit"];
+        if let PermissionRulesType::Rules(rules) = permission_rules.clone() {
+            assert_eq!(rules.max_size, 100000);
+        } else {
+            unreachable!();
+        }
+    }
+
     const CONTENT: (&str, &str) = (
         "1JUDmCT4UCSdnPsJAHBoXNkDS61Y31Ue52",
         r#"
@@ -346,6 +388,37 @@ mod tests {
 		"permissions": {
 		"bad@zeroid.bit": false,
 		"nofish@zeroid.bit": { "max_size": 100000 }
+		}
+		}
+		}"#,
+    );
+
+    const CONTENT_DATA_TEST_2: (&str, &str) = (
+        "19bq2C77xk9x9RbA7bvmuDKqxX1MsxHvXZ",
+        r#"{
+		"address": "19bq2C77xk9x9RbA7bvmuDKqxX1MsxHvXZ",
+		"files": {},
+		"ignore": ".*",
+		"inner_path": "data/users/content.json",
+		"modified": 1700336232,
+		"signs": {"19bq2C77xk9x9RbA7bvmuDKqxX1MsxHvXZ": "G5WwbKLFLTInWtLjJubWa7NajedJ4AIEqTEEHN+mtaaSYOOibHEDnv/N+tlCmSauXIOKrck3TyhkyZd2Lw+IGmg="},
+		"user_contents": {
+		"cert_signers": {
+		"kxoid.bit": ["12F5SvxoPR128aiudte78h8pY7mobroG6V","18Mt3CWBpiqJBLsPSu5JxB4B9MeaSwhyJ"],
+		"zeroid.bit": ["1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz"]
+		},
+		"optional": null,
+		"permission_rules": {
+		".*": {
+			"files_allowed": "data.json",
+			"max_size": 20000
+		},
+		"bitid/.*@zeroid.bit": {"max_size": 40000},
+		"bitmsg/.*@zeroid.bit": {"max_size": 15000}
+		},
+		"permissions": {
+		"bad@zeroid.bit": false,
+		"nofish@zeroid.bit": {"max_size": 100000}
 		}
 		}
 		}"#,
