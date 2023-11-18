@@ -79,7 +79,7 @@ pub struct Content {
     pub settings: BTreeMap<String, serde_json::Value>,
 
     #[serde(flatten)]
-    other: BTreeMap<String, Value>,
+    pub other: BTreeMap<String, Value>,
     pub zeronet_version: String,
 
     #[serde(skip_serializing, skip_deserializing)]
