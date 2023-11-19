@@ -57,7 +57,8 @@ pub struct Content {
     #[serde(skip_serializing_if = "is_default")]
     pub user_contents: Option<UserContents>,
 
-    pub ignore: String,
+    #[serde(skip_serializing_if = "is_default")]
+    pub ignore: Option<String>,
     pub modified: Number, //TODO! This need to be f64 for older content.json format
     #[serde(skip_serializing_if = "is_default")]
     pub postmessage_nonce_security: bool,
