@@ -19,6 +19,7 @@ pub struct UserContents {
     pub content_inner_path: String,
     #[serde(skip_serializing_if = "String::is_empty")]
     pub relative_path: String,
+    pub optional: Option<String>,
     #[serde(flatten)]
     #[serde(skip_serializing_if = "is_decentnet_serialization")]
     pub data: BTreeMap<String, Value>,
