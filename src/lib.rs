@@ -9,6 +9,7 @@ mod zeruformatter;
 
 pub use json_filter_sorted::*;
 
+pub use cert::Cert;
 pub use content::Content;
 pub use file::File;
 pub use include::Include;
