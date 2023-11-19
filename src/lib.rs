@@ -1,3 +1,4 @@
+pub mod cert;
 pub mod content;
 pub mod file;
 pub mod include;
@@ -144,6 +145,55 @@ mod tests {
         } else {
             unreachable!();
         }
+    }
+
+    #[test]
+    fn test_verification_4() {
+        let content =
+            Content::from_buf(ByteBuf::from(CONTENT_USER_DATA_TEST.1.as_bytes())).unwrap();
+        let key = CONTENT_USER_DATA_TEST.0.into();
+        let result = content.verify(key);
+        assert!(result);
+
+        let cert = content.cert.unwrap();
+        let address = content.meta.inner_path.split('/').rev().nth(1).unwrap();
+        let valid = cert.verify(address, "1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz");
+        assert!(valid);
+        let content =
+            Content::from_buf(ByteBuf::from(CONTENT_USER_DATA_TEST_1.1.as_bytes())).unwrap();
+        let key = CONTENT_USER_DATA_TEST_1.0.into();
+        let result = content.verify(key);
+        assert!(result);
+
+        let cert = content.cert.unwrap();
+        let address = content.meta.inner_path.split('/').rev().nth(1).unwrap();
+        let valid = cert.verify(address, "1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz");
+        assert!(valid);
+    }
+
+    #[test]
+    fn test_verification_5() {
+        let content =
+            Content::from_buf(ByteBuf::from(CONTENT_USER_DATA_TEST_2.1.as_bytes())).unwrap();
+        let key = CONTENT_USER_DATA_TEST_2.0.into();
+        let result = content.verify(key);
+        assert!(result);
+
+        let cert = content.cert.unwrap();
+        let address = content.meta.inner_path.split('/').rev().nth(1).unwrap();
+        let valid = cert.verify(address, "1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz");
+        assert!(valid);
+
+        let content =
+            Content::from_buf(ByteBuf::from(CONTENT_USER_DATA_TEST_3.1.as_bytes())).unwrap();
+        let key = CONTENT_USER_DATA_TEST_3.0.into();
+        let result = content.verify(key);
+        assert!(result);
+
+        let cert = content.cert.unwrap();
+        let address = content.meta.inner_path.split('/').rev().nth(1).unwrap();
+        let valid = cert.verify(address, "1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz");
+        assert!(valid);
     }
 
     const CONTENT: (&str, &str) = (
@@ -422,6 +472,95 @@ mod tests {
 		"nofish@zeroid.bit": {"max_size": 100000}
 		}
 		}
+		}"#,
+    );
+
+    const CONTENT_USER_DATA_TEST: (&str, &str) = (
+        "1AmeB7f5wBfJm6iR7MRZfFh65xkJzaVCX7",
+        r#"{
+		"address": "15UYrA7aXr2Nto1Gg4yWXpY3EAJwafMTNk",
+		"cert_auth_type": "web",
+		"cert_sign": "G7suwq3UAUQyJtvznnFEp4NxkYwLaRd/7vOVAcrfWPzrJf0Cw08/3xdGkuTiwXcOIsdAlTPLXvGkfrBf3T/FfKc=",
+		"cert_user_id": "pramukesh@zeroid.bit",
+		"files": {
+		"data.json": {
+		"sha512": "f8ba88089df37523f58fc4dd7a3c91022d3ef7af5be0aa7caebb95736b566b00",
+		"size": 121339
+		}
+		},
+		"inner_path": "data/users/1AmeB7f5wBfJm6iR7MRZfFh65xkJzaVCX7/content.json",
+		"modified": 1699638671,
+		"signs": {"1AmeB7f5wBfJm6iR7MRZfFh65xkJzaVCX7": "G6yN4hSiDCkmQa/DSvsN4aeQ//anz3SLadL7OmC7xDeUYfyK+gUeWZk5yhlfAvDX8E3IV/4b32VLgWg8bHXyKpk="}
+		}"#,
+    );
+
+    const CONTENT_USER_DATA_TEST_1: (&str, &str) = (
+        "1AmeB7f5wBfJm6iR7MRZfFh65xkJzaVCX7",
+        r#"{
+		"address": "1UDbADib99KE9d3qZ87NqJF2QLTHmMkoV",
+		"cert_auth_type": "web",
+		"cert_sign": "G7suwq3UAUQyJtvznnFEp4NxkYwLaRd/7vOVAcrfWPzrJf0Cw08/3xdGkuTiwXcOIsdAlTPLXvGkfrBf3T/FfKc=",
+		"cert_user_id": "pramukesh@zeroid.bit",
+		"files": {},
+		"inner_path": "data/userdb/1AmeB7f5wBfJm6iR7MRZfFh65xkJzaVCX7/content.json",
+		"modified": 1678991701,
+		"signs": {"1AmeB7f5wBfJm6iR7MRZfFh65xkJzaVCX7": "HNz5ARtOPvcC7emwOouWA/Rxc1rBYXahFHNShIrxZbUxLjCzSW13u9TduCLu1hg2vElgWLmsBwrNy/6SEnX+KMo="},
+		"user": [
+		{
+		"avatar": "png",
+		"date_added": 1638470325,
+		"hub": "1MoonP8t4rk9QamBUPh5Aspkwa1Xhf5ux2",
+		"intro": "ZeroNetX & ZeroNet Mobile Dev\nhttps://zeronet.dev\n\nZeroId : 1AmeB7f5wBfJm6iR7MRZfFh65xkJzaVCX7\n\nOfficial Site Links : \nClearnet link : https://zeronet.dev\nOfficial Zite on ZeroNetX : [ZeroNetX](/1ZeroNetyV5mKY9JF1gsm82TuBXHpfdLX)\n\nUpdater Link : [Click to update](/1Update8crprmciJHwp2WXqkx2c4iYp18)\nZeroNet Proxy: https://proxy.zeronet.dev","user_name": "PramUkesh"}]
+		}"#,
+    );
+
+    const CONTENT_USER_DATA_TEST_2: (&str, &str) = (
+        "129AZxKKZFQAyrSxv8ocZtZzPU1Gy6Ua71",
+        r#"{
+		"address": "1MoonP8t4rk9QamBUPh5Aspkwa1Xhf5ux2",
+		"cert_auth_type": "web",
+		"cert_sign": "G+s0pxaa/UAULg+rHsCaKVam/Ey7TJ1EMJ2MkuxvBOveUPFE4vc5NqCCMceswY21/JK5UTAuhXrEtVriA1GJYp0=",
+		"cert_user_id": "zeromepro@zeroid.bit",
+		"files": {
+		"avatar.jpg": {
+		"sha512": "da2ba9a8d12b7eac9090af00bb25cb183b560b4be72dfa49c6efb9c43b5da12d",
+		"size": 1097
+		},
+		"data.json": {
+		"sha512": "906887b40495669116a9e3a666e152c88fbffdda7193a1a6f207eca2dbdb3c9c",
+		"size": 5850
+		}
+		},
+		"files_optional": {
+		"1600766340.jpg": {
+		"sha512": "9631c28627d894daeb8a3fd664d64dd372ca64ed58f7bdcff976e99abef1499d",
+		"size": 23600
+		}
+		},
+		"inner_path": "data/users/129AZxKKZFQAyrSxv8ocZtZzPU1Gy6Ua71/content.json",
+		"modified": 1607847767,
+		"optional": "(?!avatar).*jpg",
+		"signs": {"129AZxKKZFQAyrSxv8ocZtZzPU1Gy6Ua71": "G15Z/ymSgNasNPkfkp5tjQeOnqrFlDwltkGp22vAIR5VbmH7WhnpHELq9hocPWh6BTl+B4XGe7d3EAIPXAjZDPs="}
+		}"#,
+    );
+
+    const CONTENT_USER_DATA_TEST_3: (&str, &str) = (
+        "129AZxKKZFQAyrSxv8ocZtZzPU1Gy6Ua71",
+        r#"{
+		"address": "1UDbADib99KE9d3qZ87NqJF2QLTHmMkoV",
+		"cert_auth_type": "web",
+		"cert_sign": "G+s0pxaa/UAULg+rHsCaKVam/Ey7TJ1EMJ2MkuxvBOveUPFE4vc5NqCCMceswY21/JK5UTAuhXrEtVriA1GJYp0=",
+		"cert_user_id": "zeromepro@zeroid.bit",
+		"files": {},
+		"inner_path": "data/userdb/129AZxKKZFQAyrSxv8ocZtZzPU1Gy6Ua71/content.json",
+		"modified": 1601718327,
+		"signs": {"129AZxKKZFQAyrSxv8ocZtZzPU1Gy6Ua71": "HFNCXOTvWfh8fzZQGg8HDtwekRb2du4300ubRMuIJOCjQrujpVrObvC93+Udk16J3O0LS5fG8sH7hHgM2UpRXrc="},
+		"user": [
+		{
+		"avatar": "jpg",
+		"date_added": 1578698807,
+		"hub": "1MoonP8t4rk9QamBUPh5Aspkwa1Xhf5ux2",
+		"intro": "Random ZeroNet user ! Am i ?\nDeveloper of ZeroNet Mobile App. \nThinking about Leaving my Career to Develop Modern P2P technologies that must impact future generations, Aiming at big hopes for technological changes. Dare to hold this aim because intentionally left my Chartered Accountant education, which is much different from technology.\n\nGithub : [canewsin](https://github.com/canewsin)\n\n### Life Time Goals :\n- Create a P2P network.\n- Create a Payment System.\n- Create an OS from Scratch.","user_name": "zeromepro"}]
 		}"#,
     );
 }

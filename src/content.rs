@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Error, Value};
 
 use crate::{
+    cert::Cert,
     meta::Meta,
     util::{is_default, Number},
     zeruformatter, File, Include, UserContents,
@@ -17,6 +18,10 @@ pub struct Content {
 
     #[serde(skip_serializing_if = "is_default")]
     pub address_index: u32,
+
+    #[serde(flatten)]
+    pub cert: Option<Cert>,
+
     #[serde(skip_serializing_if = "is_default")]
     pub domain: String,
     #[serde(skip_serializing_if = "is_default")]
