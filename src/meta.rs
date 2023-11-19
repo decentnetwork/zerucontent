@@ -22,6 +22,7 @@ impl Serialize for Meta {
                 + self.description.is_some() as usize
                 + self.zeronet_version.is_some() as usize,
         )?;
+        s.serialize_field("inner_path", &self.inner_path)?;
         if let Some(ref description) = self.description {
             s.serialize_field("description", description)?;
         }
