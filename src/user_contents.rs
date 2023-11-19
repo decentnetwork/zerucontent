@@ -1,3 +1,4 @@
+use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::cmp::PartialEq;
@@ -19,10 +20,36 @@ pub struct UserContents {
     pub content_inner_path: String,
     #[serde(skip_serializing_if = "String::is_empty")]
     pub relative_path: String,
-    pub optional: Option<String>,
+    #[serde(flatten)]
+    pub optional: Optional,
     #[serde(flatten)]
     #[serde(skip_serializing_if = "is_decentnet_serialization")]
     pub data: BTreeMap<String, Value>,
+}
+
+#[derive(Debug, Deserialize, Default, PartialEq, Eq, Clone)]
+pub struct Optional {
+    pub optional: Option<String>,
+}
+
+impl Serialize for Optional {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        #[cfg(feature = "decentnet-toml")]
+        let skip_serialization = false;
+        #[cfg(not(feature = "decentnet-toml"))]
+        let skip_serialization = false;
+        let mut s = serializer.serialize_struct(
+            "Optional",
+            false as usize + if skip_serialization { 0 } else { 1 },
+        )?;
+        if !skip_serialization {
+            s.serialize_field("optional", &self.optional)?;
+        }
+        s.end()
+    }
 }
 
 fn is_decentnet_serialization<T: Default + PartialEq>(_: &T) -> bool {
