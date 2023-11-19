@@ -1,6 +1,7 @@
 pub mod content;
 pub mod file;
 pub mod include;
+pub mod meta;
 pub mod user_contents;
 mod util;
 mod zeruformatter;

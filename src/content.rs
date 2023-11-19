@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Error, Value};
 
 use crate::{
+    meta::Meta,
     util::{is_default, Number},
     zeruformatter, File, Include, UserContents,
 };
@@ -20,8 +21,7 @@ pub struct Content {
     pub domain: String,
     #[serde(skip_serializing_if = "is_default")]
     pub title: String,
-    // #[serde(skip_serializing_if = "is_default")]
-    pub description: String,
+
     #[serde(skip_serializing_if = "is_default")]
     pub favicon: String,
 
@@ -53,8 +53,6 @@ pub struct Content {
     pub user_contents: Option<UserContents>,
 
     pub ignore: String,
-    #[serde(skip_serializing_if = "is_default")]
-    pub inner_path: String,
     pub modified: Number, //TODO! This need to be f64 for older content.json format
     #[serde(skip_serializing_if = "is_default")]
     pub postmessage_nonce_security: bool,
@@ -79,8 +77,10 @@ pub struct Content {
     pub settings: BTreeMap<String, serde_json::Value>,
 
     #[serde(flatten)]
+    pub meta: Meta,
+
+    #[serde(flatten)]
     pub other: BTreeMap<String, Value>,
-    pub zeronet_version: String,
 
     #[serde(skip_serializing, skip_deserializing)]
     _raw: (bool, Value),
@@ -108,7 +108,10 @@ impl Content {
                     .unwrap()
                     .as_secs() as usize,
             ),
-            inner_path: "content.json".to_owned(),
+            meta: Meta {
+                inner_path: "content.json".to_owned(),
+                ..Default::default()
+            },
             postmessage_nonce_security: true,
             ..Default::default()
         }
