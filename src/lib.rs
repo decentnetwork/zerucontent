@@ -71,8 +71,11 @@ mod tests {
         );
         let permission_rules = &user_contents.permission_rules[".*"];
         if let PermissionRulesType::Rules(rules) = permission_rules.clone() {
-            assert_eq!(rules.files_allowed, "data.json");
-            assert_eq!(rules.files_allowed_optional, ".*\\.(png|jpg|gif)");
+            assert_eq!(rules.files_allowed, Some("data.json".into()));
+            assert_eq!(
+                rules.files_allowed_optional,
+                Some(".*\\.(png|jpg|gif)".into())
+            );
             assert_eq!(rules.max_size, 10000);
             assert_eq!(rules.max_size_optional, 10000000);
             assert_eq!(
@@ -119,7 +122,7 @@ mod tests {
         );
         let permission_rules = &user_contents.permission_rules[".*"];
         if let PermissionRulesType::Rules(rules) = permission_rules.clone() {
-            assert_eq!(rules.files_allowed, "data.json");
+            assert_eq!(rules.files_allowed, Some("data.json".into()));
             assert_eq!(rules.max_size, 20000);
         } else {
             unreachable!();

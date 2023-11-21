@@ -48,10 +48,10 @@ impl Default for PermissionRulesType {
 #[derive(Serialize, Debug, Deserialize, Default, PartialEq, Eq, Clone)]
 #[serde(default)]
 pub struct PermissionRules {
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub files_allowed: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub files_allowed_optional: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub files_allowed: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub files_allowed_optional: Option<String>,
     #[serde(skip_serializing_if = "is_default")]
     pub max_size: usize,
     #[serde(skip_serializing_if = "is_default")]
