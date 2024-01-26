@@ -103,10 +103,10 @@ pub fn dump<T: Serialize>(value: T) -> Result<String, serde_json::error::Error> 
 }
 
 impl Content {
-    pub fn create(address: String, address_index: u32) -> Content {
+    pub fn create(address: &str, address_index: u32) -> Content {
         Content {
             title: address.to_owned(),
-            address,
+            address: address.to_owned(),
             address_index,
             modified: Number::Integer(
                 SystemTime::now()
@@ -185,12 +185,12 @@ impl Content {
     }
 
     // TODO: verify should probably return more than just a bool
-    pub fn verify(&self, key: String) -> bool {
+    pub fn verify(&self, key: &str) -> bool {
         let mut raw = self._raw.clone();
         let map = raw.1.as_object_mut().unwrap();
         map.remove("signs");
         map.remove("sign");
-        let signature = match self.signs.get(&key) {
+        let signature = match self.signs.get(key) {
             Some(v) => v,
             None => return false,
         };
@@ -204,8 +204,8 @@ impl Content {
         result.is_ok()
     }
 
-    pub fn sign(&self, privkey: String) -> String {
-        zeronet_cryptography::sign(self.dump().unwrap().as_bytes(), &privkey).unwrap()
+    pub fn sign(&self, privkey: &str) -> String {
+        zeronet_cryptography::sign(self.dump().unwrap().as_bytes(), privkey).unwrap()
     }
 
     pub fn get_file(&self, inner_path: &str) -> Option<File> {
