@@ -66,6 +66,8 @@ pub struct Content {
     #[serde(skip_serializing_if = "is_default")]
     sign: Vec<f64>, // DEPRECATED
     #[serde(skip_serializing_if = "is_default")]
+    pub signers: Vec<String>,
+    #[serde(skip_serializing_if = "is_default")]
     pub signers_sign: String,
     #[serde(skip_serializing_if = "is_default")]
     pub signs: BTreeMap<String, String>,

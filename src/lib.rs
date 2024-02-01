@@ -31,6 +31,7 @@ mod tests {
         let key = CONTENT.0.into();
         let result = content.verify(key);
         assert!(result);
+		assert_eq!(content.meta.description, Some("Home of the bots".into()));
     }
 
     #[test]
@@ -56,6 +57,16 @@ mod tests {
         let key = CONTENT_TEST.0.into();
         let result = content.verify(key);
         assert!(result);
+    }
+
+    #[test]
+    fn test_verification_with_signers_field() {
+        let content = Content::from_buf(ByteBuf::from(CONTENT_TEST_SIGNERS_FIELD.1.as_bytes())).unwrap();
+        let key = CONTENT_TEST_SIGNERS_FIELD.0.into();
+        let result = content.verify(key);
+        assert!(result);
+		assert!(!content.signers.is_empty());
+		assert!(content.signers.contains(&"1HELLoE3sFD9569CLCbHEAVqvqV7U2Ri9d".to_string()));
     }
 
     #[test]
@@ -567,4 +578,24 @@ mod tests {
 		"intro": "Random ZeroNet user ! Am i ?\nDeveloper of ZeroNet Mobile App. \nThinking about Leaving my Career to Develop Modern P2P technologies that must impact future generations, Aiming at big hopes for technological changes. Dare to hold this aim because intentionally left my Chartered Accountant education, which is much different from technology.\n\nGithub : [canewsin](https://github.com/canewsin)\n\n### Life Time Goals :\n- Create a P2P network.\n- Create a Payment System.\n- Create an OS from Scratch.","user_name": "zeromepro"}]
 		}"#,
     );
+
+	const CONTENT_TEST_SIGNERS_FIELD: (&str, &str) = (
+		"16HsVjSKmgzHLYru7ykyc7WZ2CuLADKM92",
+		r#"{
+		"address": "16HsVjSKmgzHLYru7ykyc7WZ2CuLADKM92",
+		"address_index": 31106488,
+		"description": "",
+		"files": {},
+		"ignore": "",
+		"inner_path": "content.json",
+		"modified": 1706805792,
+		"postmessage_nonce_security": true,
+		"signers": ["1HELLoE3sFD9569CLCbHEAVqvqV7U2Ri9d"],
+		"signers_sign": "G2+71FUsaGqR0nMdQqCLw/nIe4vu++BtF0WjYWqziGEOGt6TQBYnsu2YMeC+fV/zm9Ea876fUHf6IO2Xk8pdXhc=",
+		"signs": {"16HsVjSKmgzHLYru7ykyc7WZ2CuLADKM92": "HNz82dptynZxMVqQCXYU72WWzYEfq6EehR3t/XmRkmCHSaaPhUzCnYb1CcyhoLuWYTA8zxSjtExDzYjucCNyVUY="},
+		"signs_required": 1,
+		"title": "16HsVjSKmgzHLYru7ykyc7WZ2CuLADKM92 - ZeroNet_",
+		"zeronet_version": "0.8.5"
+		}"#,
+	);
 }
