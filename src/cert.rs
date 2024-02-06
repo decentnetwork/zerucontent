@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Cert {
     #[serde(rename = "cert_auth_type")]
-    auth_type: String,
+    pub auth_type: String,
 
     #[serde(rename = "cert_sign")]
-    sign: String,
+    pub sign: String,
 
     #[serde(rename = "cert_user_id")]
-    user_id: String,
+    pub user_id: String,
 }
 
 impl Cert {
